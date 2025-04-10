@@ -2,13 +2,6 @@ from util.db_conn_util import DBConnUtil
 
 # Provide the relative or absolute path to your properties file
 conn = DBConnUtil.get_connection(r'C:\Users\anush\PycharmProjects\Car Rental System\util\db.properties')
-#
-# if conn:
-#     print("✅ Database connection established!")
-#     conn.close()
-# else:
-#     print("❌ Failed to connect to the database.")
-
 
 from dao.lease_repo_impl import ICarLeaseRepositoryImpl
 from entity.car import Vehicle
@@ -51,12 +44,12 @@ def main():
                     engine_capacity = float(input("Enter engine capacity: "))
                     car = Vehicle(None, make, model, year, rate, status, passenger_capacity, engine_capacity)
                     repo.addCar(car)
-                    print("✅ Car added successfully.")
+                    print("Car added successfully.")
 
                 elif sub_choice == "2":
                     car_id = int(input("Enter car ID to remove: "))
                     repo.removeCar(car_id)
-                    print("✅ Car removed successfully.")
+                    print("Car removed successfully.")
 
                 elif sub_choice == "3":
                     cars = repo.listAvailableCars()
@@ -74,7 +67,7 @@ def main():
                     print(car)
 
                 else:
-                    print("❌ Invalid choice.")
+                    print("Invalid choice.")
 
             elif category == "2":
                 print("\n--- Customer Management ---")
@@ -92,12 +85,12 @@ def main():
                     phone = input("Enter phone number: ")
                     customer = Customer(None, first_name, last_name, email, phone)
                     repo.addCustomer(customer)
-                    print("✅ Customer added successfully.")
+                    print("Customer added successfully.")
 
                 elif sub_choice == "2":
                     customer_id = int(input("Enter customer ID to remove: "))
                     repo.removeCustomer(customer_id)
-                    print("✅ Customer removed successfully.")
+                    print("Customer removed successfully.")
 
                 elif sub_choice == "3":
                     customers = repo.listCustomers()
@@ -117,10 +110,10 @@ def main():
                     phone = input("Enter new phone number: ")
                     customer = Customer(customer_id, first_name, last_name, email, phone)
                     repo.updateCustomer(customer)
-                    print("✅ Customer information updated successfully.")
+                    print("Customer information updated successfully.")
 
                 else:
-                    print("❌ Invalid choice.")
+                    print("Invalid choice.")
 
             elif category == "3":
                 print("\n--- Lease Management ---")
@@ -136,12 +129,12 @@ def main():
                     start_date = input("Enter lease start date (YYYY-MM-DD): ")
                     end_date = input("Enter lease end date (YYYY-MM-DD): ")
                     lease = repo.createLease(customer_id, car_id, date.fromisoformat(start_date), date.fromisoformat(end_date))
-                    print("✅ Lease created successfully:", lease)
+                    print("Lease created successfully:", lease)
 
                 elif sub_choice == "2":
                     lease_id = int(input("Enter lease ID to return car: "))
                     lease = repo.returnCar(lease_id)
-                    print("✅ Car returned successfully:", lease)
+                    print("Car returned successfully:", lease)
 
                 elif sub_choice == "3":
                     leases = repo.listActiveLeases()
@@ -154,7 +147,7 @@ def main():
                         print(lease)
 
                 else:
-                    print("❌ Invalid choice.")
+                    print("Invalid choice.")
 
             elif category == "4":
                 print("\n--- Payment Handling ---")
@@ -162,26 +155,26 @@ def main():
                 amount = float(input("Enter payment amount: "))
                 lease = repo.findLeaseById(lease_id)
                 repo.recordPayment(lease, amount)
-                print("✅ Payment recorded successfully.")
+                print("Payment recorded successfully.")
 
             elif category == "5":
                 print("Exiting... Goodbye!")
                 break
 
             else:
-                print("❌ Invalid category. Please try again.")
+                print("Invalid category. Please try again.")
 
         except CarNotFoundException as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
 
         except CustomerrNotFoundException as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
 
         except LeaseNotFoundException as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
 
         except Exception as e:
-            print(f"❌ Unexpected error: {e}")
+            print(f"Unexpected error: {e}")
 
 
 if __name__ == "__main__":
