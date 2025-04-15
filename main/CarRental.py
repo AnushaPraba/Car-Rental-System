@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 import re
+=======
+from util.db_conn_util import DBConnUtil
+
+# Provide the relative or absolute path to your properties file
+conn = DBConnUtil.get_connection(r'C:\Users\anush\PycharmProjects\Car Rental System\util\db.properties')
+
+>>>>>>> 4c6f87d710758612f8979a26399e94b86bedcbb7
 from dao.lease_repo_impl import ICarLeaseRepositoryImpl
 from entity.car import Vehicle
 from entity.customer import Customer
@@ -117,6 +125,7 @@ def main():
 
                 elif sub_choice == "5":
                     customer_id = int(input("Enter customer ID to update: "))
+<<<<<<< HEAD
                     existing_customer = repo.findCustomerById(customer_id)
 
                     print("Enter new details (leave blank to keep current value):")
@@ -134,6 +143,15 @@ def main():
                     updated_customer = Customer(customer_id, first_name, last_name, email, phone)
                     repo.updateCustomer(updated_customer)
                     print("Customer updated successfully.")
+=======
+                    first_name = input("Enter new first name: ")
+                    last_name = input("Enter new last name: ")
+                    email = input("Enter new email: ")
+                    phone = input("Enter new phone number: ")
+                    customer = Customer(customer_id, first_name, last_name, email, phone)
+                    repo.updateCustomer(customer)
+                    print("Customer information updated successfully.")
+>>>>>>> 4c6f87d710758612f8979a26399e94b86bedcbb7
 
                 else:
                     print("Invalid choice.")
@@ -201,6 +219,7 @@ def main():
                 print("Invalid category. Please try again.")
 
         except CarNotFoundException as e:
+<<<<<<< HEAD
             print(f"{e}")
 
         except CustomerrNotFoundException as e:
@@ -220,6 +239,19 @@ def main():
 
         except Exception as e:
             print(f"{e}")
+=======
+            print(f"Error: {e}")
+
+        except CustomerrNotFoundException as e:
+            print(f"Error: {e}")
+
+        except LeaseNotFoundException as e:
+            print(f"Error: {e}")
+
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+
+>>>>>>> 4c6f87d710758612f8979a26399e94b86bedcbb7
 
 if __name__ == "__main__":
     main()
