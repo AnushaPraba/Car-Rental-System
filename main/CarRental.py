@@ -1,23 +1,23 @@
-from util.db_conn_util import DBConnUtil
-
-# Provide the relative or absolute path to your properties file
-conn = DBConnUtil.get_connection(r'C:\Users\anush\PycharmProjects\Car Rental System\util\db.properties')
-#
-# if conn:
-#     print("✅ Database connection established!")
-#     conn.close()
-# else:
-#     print("❌ Failed to connect to the database.")
-
-
+import re
 from dao.lease_repo_impl import ICarLeaseRepositoryImpl
 from entity.car import Vehicle
 from entity.customer import Customer
 from exception.car_not_found_exception import  CarNotFoundException
 from exception.customer_not_found_exception import  CustomerrNotFoundException
 from exception.lease_not_found_exception import  LeaseNotFoundException
+from exception.invalid_customer_detail_exception import DuplicateCustomerException
+from exception.invalid_customer_detail_exception import InvalidEmailException
+from exception.invalid_customer_detail_exception import InvalidPhoneNumberException
 from datetime import date
+from tabulate import tabulate
 
+def validate_email(email):
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        raise InvalidEmailException("Invalid email format.")
+
+def validate_phone(phone):
+    if not phone.isdigit() or len(phone) != 10:
+        raise InvalidPhoneNumberException("Phone number must be exactly 10 digits.")
 
 def main():
     repo = ICarLeaseRepositoryImpl()
@@ -48,15 +48,15 @@ def main():
                     rate = float(input("Enter daily rate: "))
                     status = "available"
                     passenger_capacity = int(input("Enter passenger capacity: "))
-                    engine_capacity = float(input("Enter engine capacity: "))
+                    engine_capacity = float(input("Enter engine capacity(in litres): "))
                     car = Vehicle(None, make, model, year, rate, status, passenger_capacity, engine_capacity)
                     repo.addCar(car)
-                    print("✅ Car added successfully.")
+                    print("Car added successfully.")
 
                 elif sub_choice == "2":
                     car_id = int(input("Enter car ID to remove: "))
                     repo.removeCar(car_id)
-                    print("✅ Car removed successfully.")
+                    print("Car removed successfully.")
 
                 elif sub_choice == "3":
                     cars = repo.listAvailableCars()
@@ -74,7 +74,7 @@ def main():
                     print(car)
 
                 else:
-                    print("❌ Invalid choice.")
+                    print("Invalid choice.")
 
             elif category == "2":
                 print("\n--- Customer Management ---")
@@ -90,14 +90,20 @@ def main():
                     last_name = input("Enter last name: ")
                     email = input("Enter email: ")
                     phone = input("Enter phone number: ")
+                    validate_email(email)
+                    validate_phone(phone)
+
+                    if repo.isEmailOrPhoneExists(email, phone):
+                        raise DuplicateCustomerException("Another Customer with email_id or phone_number already exists.")
+
                     customer = Customer(None, first_name, last_name, email, phone)
                     repo.addCustomer(customer)
-                    print("✅ Customer added successfully.")
+                    print("Customer added successfully.")
 
                 elif sub_choice == "2":
                     customer_id = int(input("Enter customer ID to remove: "))
                     repo.removeCustomer(customer_id)
-                    print("✅ Customer removed successfully.")
+                    print("Customer removed successfully.")
 
                 elif sub_choice == "3":
                     customers = repo.listCustomers()
@@ -111,16 +117,26 @@ def main():
 
                 elif sub_choice == "5":
                     customer_id = int(input("Enter customer ID to update: "))
-                    first_name = input("Enter new first name: ")
-                    last_name = input("Enter new last name: ")
-                    email = input("Enter new email: ")
-                    phone = input("Enter new phone number: ")
-                    customer = Customer(customer_id, first_name, last_name, email, phone)
-                    repo.updateCustomer(customer)
-                    print("✅ Customer information updated successfully.")
+                    existing_customer = repo.findCustomerById(customer_id)
+
+                    print("Enter new details (leave blank to keep current value):")
+                    first_name = input(f"First name [{existing_customer.get_firstName()}]: ") or existing_customer.get_firstName()
+                    last_name = input(f"Last name [{existing_customer.get_lastName()}]: ") or existing_customer.get_lastName()
+                    email = input(f"Email [{existing_customer.get_email()}]: ") or existing_customer.get_email()
+                    phone = input(f"Phone [{existing_customer.get_phoneNumber()}]: ") or existing_customer.get_phoneNumber()
+
+                    validate_email(email)
+                    validate_phone(phone)
+
+                    if repo.isEmailOrPhoneExists(email, phone, customer_id):
+                        raise DuplicateCustomerException("Another customer with this email or phone number already exists.")
+
+                    updated_customer = Customer(customer_id, first_name, last_name, email, phone)
+                    repo.updateCustomer(updated_customer)
+                    print("Customer updated successfully.")
 
                 else:
-                    print("❌ Invalid choice.")
+                    print("Invalid choice.")
 
             elif category == "3":
                 print("\n--- Lease Management ---")
@@ -128,6 +144,7 @@ def main():
                 print("2. Return Car")
                 print("3. List Active Leases")
                 print("4. List Lease History")
+                print("5. Find Lease by ID")
                 sub_choice = input("Enter your choice: ")
 
                 if sub_choice == "1":
@@ -136,12 +153,12 @@ def main():
                     start_date = input("Enter lease start date (YYYY-MM-DD): ")
                     end_date = input("Enter lease end date (YYYY-MM-DD): ")
                     lease = repo.createLease(customer_id, car_id, date.fromisoformat(start_date), date.fromisoformat(end_date))
-                    print("✅ Lease created successfully:", lease)
+                    print("Lease created successfully:", lease)
 
                 elif sub_choice == "2":
                     lease_id = int(input("Enter lease ID to return car: "))
                     lease = repo.returnCar(lease_id)
-                    print("✅ Car returned successfully:", lease)
+                    print("Car returned successfully:", lease)
 
                 elif sub_choice == "3":
                     leases = repo.listActiveLeases()
@@ -150,11 +167,23 @@ def main():
 
                 elif sub_choice == "4":
                     leases = repo.listLeaseHistory()
-                    for lease in leases:
-                        print(lease)
+                    if leases:
+                        headers = [
+                            "Lease ID", "Cust ID", "Customer Name", "Phone",
+                            "Vehicle ID", "Model", "Rate",
+                            "Start Date", "End Date", "Days", "Expected Amount"
+                        ]
+                        print(tabulate(leases, headers=headers, tablefmt="fancy_grid"))
+                    else:
+                        print("No lease records found.")
+
+                elif sub_choice == "5":
+                    lease_id = int(input("Enter lease ID: "))
+                    lease = repo.findLeaseById(lease_id)
+                    print(lease)
 
                 else:
-                    print("❌ Invalid choice.")
+                    print("Invalid choice.")
 
             elif category == "4":
                 print("\n--- Payment Handling ---")
@@ -162,27 +191,35 @@ def main():
                 amount = float(input("Enter payment amount: "))
                 lease = repo.findLeaseById(lease_id)
                 repo.recordPayment(lease, amount)
-                print("✅ Payment recorded successfully.")
+                print("Payment recorded successfully.")
 
             elif category == "5":
                 print("Exiting... Goodbye!")
                 break
 
             else:
-                print("❌ Invalid category. Please try again.")
+                print("Invalid category. Please try again.")
 
         except CarNotFoundException as e:
-            print(f"❌ Error: {e}")
+            print(f"{e}")
 
         except CustomerrNotFoundException as e:
-            print(f"❌ Error: {e}")
+            print(f"{e}")
 
         except LeaseNotFoundException as e:
-            print(f"❌ Error: {e}")
+            print(f"{e}")
+
+        except InvalidEmailException as e:
+            print(f"{e}")
+
+        except InvalidPhoneNumberException as e:
+            print(f"{e}")
+
+        except DuplicateCustomerException as e:
+            print(f"{e}")
 
         except Exception as e:
-            print(f"❌ Unexpected error: {e}")
-
+            print(f"{e}")
 
 if __name__ == "__main__":
     main()

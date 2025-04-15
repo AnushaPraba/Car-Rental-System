@@ -5,17 +5,14 @@ class DBConnUtil:
     @staticmethod
     def get_connection(prop_file_name: str):
         try:
-            # Get the full connection string
             conn_str = DBPropertyUtil.get_connection_string(prop_file_name)
 
-            # Parse the connection string into a dictionary
             conn_params = {}
             for item in conn_str.split(';'):
                 if '=' in item:
                     key, value = item.split('=', 1)
                     conn_params[key.strip()] = value.strip()
 
-            # Connect to the MySQL database
             conn = mysql.connector.connect(
                 host=conn_params.get('host'),
                 user=conn_params.get('user'),

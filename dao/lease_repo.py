@@ -29,6 +29,10 @@ class ICarLeaseRepository(ABC):
 
     # --- Customer Management ---
     @abstractmethod
+    def isEmailOrPhoneExists(self, email: str, phone: str) -> bool:
+        pass
+
+    @abstractmethod
     def addCustomer(self, customer: Customer) -> None:
         pass
 
@@ -62,10 +66,13 @@ class ICarLeaseRepository(ABC):
         pass
 
     @abstractmethod
-    def listLeaseHistory(self) -> List[Lease]:
+    def listLeaseHistory(self):
         pass
 
-    # --- Payment Handling ---
+    @abstractmethod
+    def findLeaseById(self, lease_id: int) -> Lease:
+        pass
+
     @abstractmethod
     def recordPayment(self, lease: Lease, amount: float) -> None:
         pass
