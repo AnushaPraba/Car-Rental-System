@@ -16,11 +16,11 @@ class ICarLeaseRepository(ABC):
         pass
 
     @abstractmethod
-    def listAvailableCars(self) -> List[Vehicle]:
+    def listAvailableCars(self):
         pass
 
     @abstractmethod
-    def listRentedCars(self) -> List[Vehicle]:
+    def listRentedCars(self):
         pass
 
     @abstractmethod
@@ -45,7 +45,7 @@ class ICarLeaseRepository(ABC):
         pass
 
     @abstractmethod
-    def listCustomers(self) -> List[Customer]:
+    def listCustomers(self):
         pass
 
     @abstractmethod
@@ -62,11 +62,15 @@ class ICarLeaseRepository(ABC):
         pass
 
     @abstractmethod
-    def listActiveLeases(self) -> List[Lease]:
+    def listActiveLeases(self):
         pass
 
     @abstractmethod
     def listLeaseHistory(self):
+        pass
+
+    @abstractmethod
+    def listLeasesByCustomer(self, customerID: int):
         pass
 
     @abstractmethod
@@ -75,4 +79,16 @@ class ICarLeaseRepository(ABC):
 
     @abstractmethod
     def recordPayment(self, lease: Lease, amount: float) -> None:
+        pass
+
+    @abstractmethod
+    def get_payment_history_by_customer(self, customerID):
+        pass
+
+    @abstractmethod
+    def is_username_unique(username):
+        pass
+
+    @abstractmethod
+    def get_payment_history(self):
         pass

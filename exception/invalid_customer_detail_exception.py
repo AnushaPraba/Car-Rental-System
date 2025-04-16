@@ -6,3 +6,9 @@ class InvalidPhoneNumberException(Exception):
 
 class DuplicateCustomerException(Exception):
     pass
+
+class InvalidPasswordException(Exception):
+    pass
+
+class DuplicateUserNameException(Exception):
+    pass

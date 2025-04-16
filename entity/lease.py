@@ -1,11 +1,13 @@
 class Lease:
-    def __init__(self, leaseID=None, vehicleID=None, customerID=None, startDate=None, endDate=None, type=None):
+    def __init__(self, leaseID=None, vehicleID=None, customerID=None, startDate=None, endDate=None, type=None,expectedAmount=None,paymentStatus=None):
         self.__leaseID = leaseID
         self.__vehicleID = vehicleID
         self.__customerID = customerID
         self.__startDate = startDate
         self.__endDate = endDate
         self.__type = type
+        self.__expectedAmount=expectedAmount
+        self.__paymentStatus=paymentStatus
 
     def get_leaseID(self):
         return self.__leaseID
@@ -25,6 +27,12 @@ class Lease:
     def get_type(self):
         return self.__type
 
+    def get_expectedAmount(self):
+        return self.__expectedAmount
+
+    def get_paymentStatus(self):
+        return self.__paymentStatus
+
     def set_leaseID(self, leaseID):
         self.__leaseID = leaseID
 
@@ -43,8 +51,15 @@ class Lease:
     def set_type(self, type):
         self.__type = type
 
+    def set_expectedAmount(self,expectedAmount):
+        self.__expectedAmount=expectedAmount
+
+    def set_paymentStatus(self,paymentStatus):
+        self.__paymentStatus=paymentStatus
+
     def __str__(self):
         return (
             f"Lease[ID={self.get_leaseID()}, VehicleID={self.get_vehicleID()}, CustomerID={self.get_customerID()}, "
-            f"StartDate={self.get_startDate()}, EndDate={self.get_endDate()}, Type={self.get_type()}]"
+            f"StartDate={self.get_startDate()}, EndDate={self.get_endDate()}, Type={self.get_type()}"
+            f"ExpectedAmount={self.get_expectedAmount()},PaymentStatus={self.get_paymentStatus()}]"
         )
