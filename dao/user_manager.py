@@ -5,7 +5,7 @@ from getpass import getpass
 
 class UserManager:
     def __init__(self):
-        self.conn = DBConnUtil.get_connection(r'C:/Users/anush/PycharmProjects/Car Rental System/util/db.properties')
+        self.conn = DBConnUtil.get_connection(r'E:/nila_hexa/Car-Rental-System/util/db.properties')
 
     def signup_customer(self):
         cursor = self.conn.cursor()

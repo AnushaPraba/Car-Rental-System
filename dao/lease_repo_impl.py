@@ -5,7 +5,7 @@ from entity.lease import Lease
 from util.db_conn_util import DBConnUtil
 from exception.lease_not_found_exception import LeaseNotFoundException
 from exception.car_not_found_exception import CarNotFoundException
-from exception.customer_not_found_exception import CustomerrNotFoundException
+from exception.customer_not_found_exception import CustomerNotFoundException
 from exception.invalid_customer_detail_exception import DuplicateCustomerException
 import mysql.connector
 from datetime import date
@@ -13,7 +13,7 @@ from datetime import date
 class ICarLeaseRepositoryImpl(ICarLeaseRepository):
 
     def __init__(self):
-        self.conn = DBConnUtil.get_connection(r'C:/Users/anush/PycharmProjects/Car Rental System/util/db.properties')
+        self.conn = DBConnUtil.get_connection(r'E:/nila_hexa/Car-Rental-System/util/db.properties')
 
     # --- Car Management ---
     def addCar(self, car: Vehicle) -> None:
@@ -108,7 +108,7 @@ class ICarLeaseRepositoryImpl(ICarLeaseRepository):
         customer = cursor.fetchone()
 
         if customer is None:
-            raise CustomerrNotFoundException(f"Customer with ID {customerID} does not exist.")
+            raise CustomerNotFoundException(f"Customer with ID {customerID} does not exist.")
 
         try:
             cursor.execute("SELECT * FROM Lease WHERE customerID = %s", (customerID,))
@@ -151,7 +151,7 @@ class ICarLeaseRepositoryImpl(ICarLeaseRepository):
         if row:
             return Customer(*row)
         else:
-            raise CustomerrNotFoundException("Customer not found with the given ID")
+            raise CustomerNotFoundException("Customer not found with the given ID")
 
     def createLease(self, customerID: int, carID: int, startDate, endDate) -> Lease:
         cursor = self.conn.cursor()
@@ -164,7 +164,7 @@ class ICarLeaseRepositoryImpl(ICarLeaseRepository):
 
         cursor.execute("SELECT * FROM Customer WHERE customerID = %s", (customerID,))
         if cursor.fetchone() is None:
-            raise CustomerrNotFoundException(f"Customer with ID {customerID} not found.")
+            raise CustomerNotFoundException(f"Customer with ID {customerID} not found.")
 
         cursor.execute("SELECT * FROM Vehicle WHERE vehicleID = %s AND status = 'available'", (carID,))
         if cursor.fetchone() is None:
